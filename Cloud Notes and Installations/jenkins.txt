@@ -1,0 +1,269 @@
+
+JENKINS IN CICD PIPELINES
+----------------------------------------------
+In developer machine
+apt install git -y
+git --version
+
+create repository in github
+name jenkinsdocker
+4. git clone https://github.com/bharat4423/jenkins-docker1.git
+5. ls......we get clone of repository
+6. ls -ll
+7. cd CloudComputing (repo name)
+8. ls
+9. ls -la
+
+echo "hi.....this is jenkins demo" > index.html
+or we can create vim index.html  file as well
+
+git add -A
+git commit -m "1.0"
+git commit -m "" 
+git config --global username
+git config --global user.email "bharat4423@gmail.com"
+git commit -m ""
+git push -u origin master(branch name)
+.....username
+
+password :
+
+
+In Jenkins machine
+
+apt update -y
+
+
+below lonks is from digitaloceal website
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+	
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+sudo apt update
+
+sudo apt install jenkins
+========================
+apt update -y
+apt install openjdk-11-jre-headless -y
+apt install curl -y
+
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install jenkins
+
+systemctl status jenkins
+systemctl enable jenkins
+
+ip a
+ap of machine with port
+192.168.20.147:8080
+
+copy below command when we get dashboard
+cat /var/lib/jenkins/secrets/initialAdminPassword
+passowrd: 9d8ad06f559143e398d2d0dac59ae11e
+ 
+aftet instslling plugins
+
+username : jenkins
+pass : jenkins
+confirm: jenkins
+full name: jenkins
+email: jenkins@gmail.com
+		save and continue
+https://192.168.20.156:8080
+
+click on create a job
+
+Enter an item(job name with no space)
+	first-job
+click freestyle
+
+select gihub project (put url without .git)
+project url: https://github.com/bharat4423/jenkins-docker1
+
+.git
+execute concurrent builds if necessary
+
+select git
+
+https://github.com/bharat4423/jenkins-docker1.git
+
+branch to build
+*/master
+
+
+build triggers
+
+select build periodically
+
+give scheduler click on question mark
+ * * * * *
+
+		apply and save
+if it fail then install git
+
+apt install git docker* ssh -y
+
+then it will success
+
+then go to first-job (dropdown
+build now
+
+cd /var/lib/jenkins/workspace/first-job
+ls
+
+In Second project we create docker image and covert into tar file
+
+systemctl start jenkins
+cd /var/lib/jenkins/workspace/
+ls
+cd first-job
+
+vim Dockerfile
+	FROM nginx
+	COPY . /usr/share/nginx/html/ ....save
+
+ls
+
+
+new item
+second-job
+
+freestyle project 
+
+ok
+
+description:  creating dockerimage and .tar file for production server
+
+description ke niche wale option select nhi karne hai
+second and thirdjob hu create karte hai tab 
+
+Build trigger
+select after prjects are built ...for second job
+
+project to watch 
+  type existing project remove space after comma   i.e. first-job,
+
+select triggered only if build is stable
+
+nothing to select do in build env
+
+ 
+Build Step
+
+add build step
+select execute shell
+
+********First Script*****on second-job
+	
+		cd /var/lib/jenkins/workspace/jenjob1
+		sudo docker build -t myweb:1.0 .
+		sudo docker save myweb:1.0 > myweb.tar
+
+first Apply..then Save
+
+if get error
+click on second job of #1
+we get console for to know error
+configure
+come to terminal of jenkins
+vim /etc/sudoers
+	#user priveledge specification
+	root	ALL=(ALL:ALL) ALL
+	jenkins	ALL=	NOPASSWD:	ALL ....copy from google
+#allow members of group sudo to execute any command
+        %sudo ALL=(ALL:ALL) NOPASSWD: ALL
+			save
+giver space with tab
+
+cat etc/sudoers | grep jenkins 
+
+go to dashboard of jenkins
+check if running or not
+
+come to terminal
+
+ls
+
+...we get web.tar
+
+======================================
+
+In third prject we transfer the tar file using ssh
+
+new item : final-job
+freestyle
+ok
+description: transfer tar file to production server using ssh
+
+select after prjects are built ...for final job
+
+project to watch 
+  type existing project remove space after comma   i.e. second-job,
+select triggered only if build is stable
+nothing to select do in build env
+
+Build Step
+add build step
+select execute shell
+	write there
+*****second-script****** Third Job
+ 
+	cd /var/lib/jenkins/workspace/jenjob1
+	scp myweb.tar node3@192.168.20.153:/home/node3
+	ssh node3@192.168.20.153 "sudo docker load < myweb.tar"
+	#ssh node3@192.168.20.153 "sudo docker rm -f web1"
+	ssh node3@192.168.20.153 "sudo docker run --name web1 -d -p 9000:80 myweb:1.0"
+
+first Apply..then Save
+if it fail
+go to prodcution server
+go to terminal
+apt install ssh* -y
+if we get again error then go to dashboard 
+we do passwordless ssh in production server
+we do passwordless jenkins=machine2 and hpcsa=machine3
+come to jenkins machine
+su -s /bin/bash jenkins
+ssh-keygen
+press enter 3 times
+ssh-copy-id hpcsa@192.168.20.157
+production server user and ip
+asking for passowrd: give password of production server
+ssh hpcsa@192.168.20.157
+exit
+if it get error
+so install docker in production server
+apt install docker* -y
+systemctl start docker
+systemctl enable docker
+if get error
+then go to cofiguration of final job
+cd /var/lib/jenkins/workspace/first-job/
+scp myweb.tar hpcsa@192.168.20.157:/home/hpcsa/ ........poduction server ip and user name
+ssh hpcsa@192.168.20.157 "sudo docker load < myweb.tar"
+ssh hpcsa@192.168.20.157 "sudo docker run --name web1 -d -p 9000:80 myweb:1.0"
+again get errors 
+production server ke sudoes me jana
+vim /etc/sudoers
+#allow members of group sudo to execute any command
+%sudo ALL=(ALL:ALL) NOPASSWD: ALL
+			save
+giver space with tab
+
+if again get error
+
+cd /var/lib/jenkins/workspace/first-job/
+scp myweb.tar hpcsa@192.168.20.157:/home/hpcsa/ ........poduction server ip and user name
+ssh hpcsa@192.168.20.157 "sudo docker load < myweb.tar"
+ssh hpcsa@192.168.20.157 "sudo docker rm -f web1"
+ssh hpcsa@192.168.20.157 "sudo docker run --name web1 -d -p 9000:80 myweb:1.0"
+
+prometheus grafana for security

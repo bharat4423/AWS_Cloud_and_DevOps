@@ -1,0 +1,86 @@
+----------------------------------------
+LAMBDA FUNCTION
+1)Create IAM 
+IAM roles For generate Logs
+create role
+select aws sservice
+select lambda
+in search bar type...exec
+	select	 +AWSLambdaBasicExecutionRole
+				next
+Role details
+Role name:
+create role
+
+IAM roles For generate SNS
+create role
+select aws sservice
+select lambda
+in search bar type...sns
+	select	 +AWSSNSFULLACCESS
+				next
+Role details
+Role name:
+create role
+
+2)Create S3 bucket
+click on bucket
+create bucket
+bucket name :
+aws region:
+choose bucket
+ACL disabled....if we have ACL then select ACL enable
+block public access setting....untick
+I acknowldge
+click on create bucket
+
+clcik on bucket 
+click on upload
+add files
+
+3)Create Lambda
+create function
+select author from scratch
+give function name
+Runtime...select python3.7
+Change default execution role
+select Use an existing role....coz we already created iam roles
+Existing role
+select cloudwatch role
+
+Create function
+
+4)Create SNS
+
+go to topic
+create topic
+  select standard
+Name:
+create topic
+create subscription
+Protocol
+	select Email
+Endpoint
+	provide your email id
+create subscription
+then Go to your mail id
+check mail of aws
+     click on confirm
+refresh site it will make it as confirm
+
+Again go to LAmada
+click on Add Trigger
+dropdown
+select S3
+select your bucket
+acknowledge
+add
+Now click on Add Destination
+select Asynchronous invocation
+Condition
+select On success
+		save
+
+Go To S3
+ click on your bucket
+upload files

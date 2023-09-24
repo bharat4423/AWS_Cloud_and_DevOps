@@ -1,0 +1,76 @@
+
+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
+
+
+Username - jenkins
+password - jenkins
+
+Full Name- jenkins
+Email address- jenkins@gmail.com
+
+
+http://192.168.20.132:8080/
+
+
+
+second job
+
+build step
+Execute shell
+
+cd /var/lib/jenkins/workspace/first-job/
+docker build -t myweb:1.0
+docker save myweb:1.0 > myweb.tar
+
+
+
+jenkins@node2:~/workspace/first-job$ history
+    1  ssh-keygen
+			\_Enter
+				\_Enter
+					\_Enter
+					
+    2  ssh-copy-id uadmin@192.168.20.133
+    3  ssh uadmin@192.168.20.133
+    4  history
+jenkins@node2:~/workspace/first-job$
+
+
+
+
+
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+docker run --name c2 -ti -d -p 9000:80 ubuntu  #c2--->container name
+docker attach c2
+docker start c2
+
+########Inside Container########
+root@c226be7732fb:/# history
+apt update -y
+apt upgrade -y
+apt install apache2 -y
+apt install systemctl -y
+apt install curl -y
+apt install vim -y
+systemctl start apache2
+systemctl enable apache2
+systemctl status apache2
+curl http://localhost
+cd /var/www/html/
+rm -rf index.html
+vim index.html
+ls
+cat index.html
+curl http://localhost
+docker inspect
+docker inspect c2
+exit
+history
+
+
+How to increse storage in ubuntu
+
+  df -h
+  df -h / /home/
+  sudo lvextend --resizefs -L +40G /dev/mapper/ubuntu--vg-ubuntu--ld
